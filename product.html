@@ -1,0 +1,43 @@
+<!-- product.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product - Tuff 3D</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <a href="index.html">← Back to Shop</a>
+        <h1 id="productName"></h1>
+    </header>
+
+    <div class="product-detail">
+        <img id="productImage" src="" alt="" style="max-width:400px;">
+        <p id="productPrice"></p>
+        <p id="productStock"></p>
+        <p>Cash Only</p>
+        <button>Add to Cart</button>
+    </div>
+
+    <script>
+        // Get the product id from the URL
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get("id");
+
+        // Load inventory.json
+        fetch("inventory.json")
+            .then(res => res.json())
+            .then(products => {
+                const product = products.find(p => p.id == productId);
+                if (product) {
+                    document.getElementById("productName").textContent = product.name;
+                    document.getElementById("productImage").src = product.image;
+                    document.getElementById("productImage").alt = product.name;
+                    document.getElementById("productPrice").textContent = "$" + product.price.toFixed(2);
+                    document.getElementById("productStock").textContent = "In Stock: " + product.stock;
+                }
+            });
+    </script>
+</body>
+</html>
