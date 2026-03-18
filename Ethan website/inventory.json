@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "The Cone Fidget",
+    "price": 5.99,
+    "stock": 5,
+    "image": "images/cone.png"
+  },
+  {
+    "id": 2,
+    "name": "Hexagon Chainmal",
+    "price": 8.49,
+    "stock": 3,
+    "image": "images/hexamail.png"
+  },
+  {
+    "id": 3,
+    "name": "Widget C",
+    "price": 15.00,
+    "stock": 10,
+    "image": "https://website/100"
+  }
+]
