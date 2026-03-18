@@ -1,46 +1,45 @@
 const inventoryUrl = "inventory.json";
 
+// ----- STORAGE SYSTEM -----
+async function getProducts() {
+    const saved = localStorage.getItem("products");
+    if (saved) return JSON.parse(saved);
+
+    const response = await fetch(inventoryUrl);
+    const data = await response.json();
+    localStorage.setItem("products", JSON.stringify(data));
+    return data;
+}
+
+function saveProducts(products) {
+    localStorage.setItem("products", JSON.stringify(products));
+}
+
 // ----- SHOP VIEW -----
 async function loadShop() {
-    const response = await fetch(inventoryUrl);
-    const products = await response.json();
+    const products = await getProducts();
     const grid = document.getElementById("productGrid");
     const searchInput = document.getElementById("search");
 
     function displayProducts(filteredProducts) {
         grid.innerHTML = "";
         filteredProducts.forEach(p => {
-            if (p.stock > 0) { // only show in-stock
+            if (p.stock > 0) {
                 const card = document.createElement("div");
                 card.className = "product-card";
-                card.style.cursor = "pointer"; // make whole card look clickable
+                card.style.cursor = "pointer";
 
-                // Click anywhere on card to go to product.html with ID
                 card.onclick = () => {
                     window.location.href = `product.html?id=${p.id}`;
-                }
+                };
 
-                const img = document.createElement("img");
-                img.src = p.image;
-                img.alt = p.name;
-
-                const name = document.createElement("h3");
-                name.textContent = p.name;
-
-                const price = document.createElement("p");
-                price.textContent = `$${p.price.toFixed(2)}`;
-
-                const stock = document.createElement("p");
-                stock.textContent = `In Stock: ${p.stock}`;
-
-                const cash = document.createElement("p");
-                cash.textContent = "Cash Only";
-
-                card.appendChild(img);
-                card.appendChild(name);
-                card.appendChild(price);
-                card.appendChild(stock);
-                card.appendChild(cash);
+                card.innerHTML = `
+                    <img src="${p.image}" alt="${p.name}">
+                    <h3>${p.name}</h3>
+                    <p>$${p.price.toFixed(2)}</p>
+                    <p>In Stock: ${p.stock}</p>
+                    <p>Cash Only</p>
+                `;
 
                 grid.appendChild(card);
             }
@@ -73,9 +72,9 @@ async function login() {
     }
 }
 
+// ----- MANAGER PANEL -----
 async function loadInventory() {
-    const response = await fetch(inventoryUrl);
-    let products = await response.json();
+    let products = await getProducts();
     const grid = document.getElementById("managerGrid");
 
     function render() {
@@ -103,7 +102,6 @@ async function loadInventory() {
         });
     }
 
-    // Make functions global
     window.updateProduct = (index) => {
         const newPrice = parseFloat(document.getElementById(`price-${index}`).value);
         const newStock = parseInt(document.getElementById(`stock-${index}`).value);
@@ -111,12 +109,15 @@ async function loadInventory() {
         products[index].price = newPrice;
         products[index].stock = newStock;
 
-        alert("Updated!");
+        saveProducts(products); // 🔥 THIS IS THE MAGIC
+        alert("Saved!");
         render();
     };
 
     window.deleteProduct = (index) => {
         products.splice(index, 1);
+
+        saveProducts(products); // 🔥 SAVE AFTER DELETE
         alert("Deleted!");
         render();
     };
